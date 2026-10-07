@@ -72,7 +72,8 @@ before(async function () {
 
   console.log('INFO: building frontend');
   const pnpmCMD = onWindows ? 'pnpm.cmd' : 'pnpm';
-  const frontend_build_result = spawnSync(pnpmCMD, ['build'], { cwd: projectRoot, stdio: 'pipe', encoding: 'utf-8' });
+  // shell: true is required on Node >= 20.12.1 / 24 to spawn .cmd/.bat shims (CVE-2024-27980).
+  const frontend_build_result = spawnSync(pnpmCMD, ['build'], { cwd: projectRoot, stdio: 'pipe', encoding: 'utf-8', shell: onWindows });
   console.log(frontend_build_result.stderr);
   if (frontend_build_result.error !== undefined) {
     console.log(frontend_build_result.error);
@@ -92,7 +93,7 @@ before(async function () {
   }
   // ensure the release app has been built
   console.log('INFO: building program (rust)');
-  const cargo_build_result = spawnSync('cargo', ['build', '--release'], { cwd: srcTauri, stdio: 'pipe', encoding: 'utf-8' });
+  const cargo_build_result = spawnSync('cargo', ['build', '--release'], { cwd: srcTauri, stdio: 'pipe', encoding: 'utf-8', shell: onWindows });
   console.log(cargo_build_result.stderr);
   if (cargo_build_result.error?.errno !== undefined) {
     console.log(cargo_build_result.error);

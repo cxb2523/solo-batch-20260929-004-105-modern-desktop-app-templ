@@ -1,0 +1,23 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-fs",
+  "description": "Filesystem permissions actually exercised by the main window. Only the well-known folders the app writes to (Downloads for example_file.txt, Documents for APP_NAME folders/stores) are in scope; nothing broader.",
+  "platforms": ["macOS", "windows", "linux"],
+  "windows": ["main"],
+  "permissions": [
+    "fs:default",
+    "fs:allow-write-text-file",
+    "fs:allow-write-file",
+    "fs:allow-mkdir",
+    "fs:allow-read-dir",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "$DOWNLOAD/**",
+        "$DOCUMENT/**",
+        "$APP/**",
+        "$APPDATA/**"
+      ]
+    }
+  ]
+}

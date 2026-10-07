@@ -1,0 +1,14 @@
+﻿import { Builder, Capabilities } from 'selenium-webdriver';
+const capabilities = new Capabilities();
+capabilities.set('tauri:options', { application: process.cwd() + '/src-tauri/target/release/app.exe' });
+capabilities.setBrowserName('wry');
+const driver = await new Builder().withCapabilities(capabilities).usingServer('http://localhost:4444/').build();
+console.log('session created');
+console.log('title:', await driver.getTitle());
+await driver.get('http://tauri.localhost/ipc-inspector');
+await driver.sleep(2000);
+console.log('url:', await driver.getCurrentUrl());
+const body = await driver.findElement({css:'body'}).getText();
+console.log('body snippet:', body.slice(0, 300));
+await driver.quit();
+process.exit(0);

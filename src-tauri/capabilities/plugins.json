@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-plugins",
+  "description": "Permissions of the bundled Tauri plugins that the frontend actually calls. tauri-plugin-dialog is intentionally absent: it is registered in Rust but never invoked from src, so the IPC inspector can use plugin:dialog|message to demonstrate the denied branch.",
+  "platforms": ["macOS", "windows", "linux"],
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "log:default",
+    "process:default",
+    "os:default",
+    "shell:default",
+    "opener:default",
+    "notification:default",
+    "store:default",
+    "updater:default"
+  ]
+}

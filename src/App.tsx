@@ -19,6 +19,7 @@ import 'simplebar-react/dist/simplebar.min.css';
 import classes from './App.module.css';
 import { fmtError, useCookie, useLocalForage } from './common/utils';
 import LanguageHeaders from './components/LanguageHeaders';
+import IpcInspector from './components/IpcInspector';
 import { ScrollToTop } from './components/ScrollToTop';
 import { useTauriContext } from './tauri/TauriProvider';
 import { TitleBar } from './tauri/TitleBar';
@@ -44,6 +45,7 @@ export default function () {
 	// left sidebar
 	const views: View[] = [
 		{ component: ExampleView, path: '/example-view', name: t('ExampleView') },
+		{ component: IpcInspector, path: '/ipc-inspector', name: 'IPC Inspector' },
 		{ component: () => <Text>Woo, routing works</Text>, path: '/example-view-2', name: 'Test Routing' },
 		{ component: LazyView, path: '/lazy-view', name: 'Lazy Load' }
 		// Other ways to add views to this array:

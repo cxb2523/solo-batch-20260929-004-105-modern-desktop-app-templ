@@ -2,7 +2,7 @@ use serde::Serialize;
 use std::sync::Mutex;
 use tauri::menu::{Menu, MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
-use tauri::{self, command, Emitter, Manager, Runtime};
+use tauri::{self, Emitter, Manager, Runtime, command};
 
 #[derive(Clone, Serialize)]
 pub struct IconTrayPayload {
@@ -58,9 +58,13 @@ static TRAY_ID: &'static str = "main";
 
 pub fn create_tray_icon(app: &tauri::AppHandle) -> Result<TrayIcon, tauri::Error> {
   TrayIconBuilder::with_id(TRAY_ID)
-		.icon(tauri::image::Image::from_bytes(include_bytes!("../icons/SystemTray1.ico")).ok().expect("SystemTray1.icon not found"))
+    .icon(
+      tauri::image::Image::from_bytes(include_bytes!("../icons/SystemTray1.ico"))
+        .ok()
+        .expect("SystemTray1.icon not found"),
+    )
     .menu(&create_tray_menu(app, "en".into())?)
-		.tooltip("App Tooltip")
+    .tooltip("App Tooltip")
     .show_menu_on_left_click(false)
     .on_menu_event(move |app, event| {
       if let Some(main_window) = app.get_webview_window("main") {

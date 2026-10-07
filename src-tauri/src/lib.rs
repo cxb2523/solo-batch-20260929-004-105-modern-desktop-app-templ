@@ -15,9 +15,11 @@ use tauri::{
 use tauri_plugin_store;
 use tauri_plugin_window_state;
 
+mod commands;
 mod tray_icon;
 mod utils;
 
+use commands::{legacy_process_file, list_capabilities, process_file};
 use tray_icon::{TrayState, create_tray_icon, tray_update_lang};
 use utils::long_running_thread;
 
@@ -36,12 +38,6 @@ struct Example<'a> {
 #[cfg(target_os = "linux")]
 pub struct DbusState(Mutex<Option<dbus::blocking::SyncConnection>>);
 
-#[tauri::command]
-fn process_file(filepath: String) -> String {
-  println!("Processing file: {}", filepath);
-  "Hello from Rust!".into()
-}
-
 #[cfg(target_os = "linux")]
 unsafe fn webkit_hidpi_workaround() {
   // See: https://github.com/spacedriveapp/spacedrive/issues/1512#issuecomment-1758550164
@@ -56,7 +52,9 @@ unsafe fn main_prelude() {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   // SAFETY: running on single thread
-	unsafe { main_prelude(); }
+  unsafe {
+    main_prelude();
+  }
   // main window should be invisible to allow either the setup delay or the plugin to show the window
   let mut log_builder = tauri_plugin_log::Builder::new().target(tauri_plugin_log::Target::new(
     tauri_plugin_log::TargetKind::LogDir {
@@ -82,7 +80,12 @@ pub fn run() {
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_fs::init())
     // custom commands
-    .invoke_handler(tauri::generate_handler![tray_update_lang, process_file,])
+    .invoke_handler(tauri::generate_handler![
+      tray_update_lang,
+      process_file,
+      legacy_process_file,
+      list_capabilities,
+    ])
     // allow only one instance and propagate args and cwd to existing instance
     .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
       app

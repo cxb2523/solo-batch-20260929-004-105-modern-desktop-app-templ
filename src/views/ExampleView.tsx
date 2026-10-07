@@ -7,7 +7,8 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import * as shell from '@tauri-apps/plugin-shell';
 import { Trans, useTranslation } from 'react-i18next';
-import { notify } from '../common/utils';
+import { fmtError, notify } from '../common/utils';
+import { describeCommandError, normalizeIpcError } from '../tauri/ipc';
 import { createStorage } from '../tauri/storage';
 import { APP_NAME, useMinWidth, useTauriContext } from '../tauri/TauriProvider';
 import { joinPath } from '../tauri/tauriUtils';
@@ -37,10 +38,19 @@ export default function ExampleView() {
 			await fs.writeTextFile('example_file.txt', 'oh this is from TAURI! COOLIO.\n', { baseDir: fs.BaseDirectory.Download });
 			// show in file explorer: https://github.com/tauri-apps/tauri/issues/4062
 			await shell.open(downloads!);
-			await invoke('process_file', { filepath: filePath }).then(msg => {
-				notify('Message from Rust', msg as string);
-				notifications.show({ title: 'Message from Rust', message: msg as string });
-			});
+			try {
+				const msg = await invoke<string>('process_file', { filepath: filePath });
+				notify('Message from Rust', msg);
+				notifications.show({ title: 'Message from Rust', message: msg });
+			} catch (error) {
+				const normalized = normalizeIpcError(error);
+				const hint = describeCommandError(normalized.code);
+				notifications.show({
+					color: 'red',
+					title: normalized.code ? `process_file failed: ${normalized.code}` : 'process_file failed',
+					message: hint || normalized.message || fmtError(error)
+				});
+			}
 		}
 	}
 	// <> is an alias for <React.Fragment>

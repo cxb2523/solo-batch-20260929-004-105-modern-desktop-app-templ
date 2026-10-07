@@ -1,0 +1,4 @@
+
+thread 'main' (31404) panicked at src\lib.rs:119:6:
+error while running tauri application: PluginInitialization("updater", "Error deserializing 'plugins.updater' within your Tauri configuration: invalid type: null, expected struct Config")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
